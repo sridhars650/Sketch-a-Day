@@ -1,0 +1,27 @@
+{
+  "name": "sketch-a-day",
+  "version": "1.0.0",
+  "description": "Welcome to Sketch-a-Day! This is a fun and interactive platform where you can unleash your creativity by participating in daily drawing prompts, sharing your doodles, and engaging with a community of fellow doodlers.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sridhars650/Sketch-a-Day.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sridhars650/Sketch-a-Day/issues"
+  },
+  "homepage": "https://github.com/sridhars650/Sketch-a-Day#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.4.5"
+  }
+}
