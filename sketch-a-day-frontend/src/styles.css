@@ -162,3 +162,20 @@ body {
 .overlay-visible {
   display: flex !important;
 }
+
+/* Favorite button styles */
+.favorite-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.favorite-button.favorited {
+  color: red;
+}
+
+.favorite-button:hover {
+  transform: scale(1.2);
+}

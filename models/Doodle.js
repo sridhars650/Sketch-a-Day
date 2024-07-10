@@ -1,4 +1,3 @@
-// models/Doodle.js
 const mongoose = require('mongoose');
 
 const DoodleSchema = new mongoose.Schema({
@@ -13,6 +12,10 @@ const DoodleSchema = new mongoose.Schema({
   description: {
     type: String,
     required: true,
+  },
+  favorites: {
+    type: Number,
+    default: 0,
   },
   createdAt: {
     type: Date,

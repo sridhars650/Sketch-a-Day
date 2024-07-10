@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './styles.css'; // Import CSS file
@@ -10,6 +9,7 @@ function App() {
   const [description, setDescription] = useState('');
   const [overlayImage, setOverlayImage] = useState('');
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
+  const [favoritedDoodleId, setFavoritedDoodleId] = useState(null);
 
   useEffect(() => {
     fetchDoodles();
@@ -18,7 +18,8 @@ function App() {
   const fetchDoodles = async () => {
     try {
       const response = await axios.get('http://localhost:3000/api/doodles');
-      setDoodles(response.data);
+      const sortedDoodles = response.data.sort((a, b) => b.favorites - a.favorites);
+      setDoodles(sortedDoodles);
     } catch (error) {
       console.error('Error fetching doodles:', error);
     }
@@ -27,11 +28,7 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const newDoodle = {
-        user,
-        image,
-        description,
-      };
+      const newDoodle = { user, image, description };
       await axios.post('http://localhost:3000/api/doodles', newDoodle);
       fetchDoodles();
       setUser('');
@@ -52,10 +49,51 @@ function App() {
     setOverlayImage('');
   };
 
+  const handleFavoriteClick = async (doodleId) => {
+    try {
+      const isCurrentlyFavorited = favoritedDoodleId === doodleId;
+  
+      if (isCurrentlyFavorited) {
+        // Unfavorite the doodle
+        await axios.delete(`http://localhost:3000/api/doodles/${doodleId}/favorite`);
+        setFavoritedDoodleId(null); // Clear favorited doodle ID
+  
+        // Reset localStorage flag only on unfavorite
+        const lastFavorited = localStorage.getItem('lastFavorited');
+        if (lastFavorited && new Date().getDate() === new Date(lastFavorited).getDate()) {
+          localStorage.removeItem('lastFavorited');
+        }
+      } else {
+        const lastFavorited = localStorage.getItem('lastFavorited');
+  
+        // Check if a doodle has already been favorited today
+        if (lastFavorited && new Date().getDate() === new Date(lastFavorited).getDate()) {
+          alert('You can only favorite one doodle per day.');
+          return;
+        }
+  
+        // Favorite the doodle
+        await axios.post(`http://localhost:3000/api/doodles/${doodleId}/favorite`);
+        setFavoritedDoodleId(doodleId); // Set as favorited
+  
+        // Store in localStorage that this doodle was favorited today
+        localStorage.setItem('lastFavorited', new Date().toISOString());
+      }
+  
+      fetchDoodles(); // Refresh doodles to reflect the new favorite count
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
+  };
+  
+    
+  
+  
+
   return (
     <div className="App">
       <header className="header">
-        <h1>Today's Doodle Challenge: </h1>
+        <h1>Draw a stickman!</h1>
       </header>
 
       <div className="form-container">
@@ -97,6 +135,12 @@ function App() {
               onClick={() => handleImageClick(doodle.image)}
             />
             <p>{doodle.description}</p>
+            <button
+              className={`favorite-button ${favoritedDoodleId === doodle._id ? 'favorited' : ''}`}
+              onClick={() => handleFavoriteClick(doodle._id)}
+            >
+              ❤️ {doodle.favorites}
+            </button>
           </div>
         ))}
       </div>
