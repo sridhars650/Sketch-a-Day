@@ -2,71 +2,163 @@
 
 /* Global styles */
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f0f0f0;
-    color: #333;
-  }
-  
-  /* Header styles */
-  .header {
-    background-color: #007bff;
-    color: #fff;
-    padding: 1rem;
-    text-align: center;
-  }
-  
-  /* Form styles */
-  .form-container {
-    max-width: 600px;
-    margin: 0 auto;
-    background-color: #fff;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .form-container input,
-  .form-container textarea,
-  .form-container button {
-    width: 100%;
-    margin-bottom: 1rem;
-    padding: 0.5rem;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-  }
-  
-  .form-container textarea {
-    resize: vertical;
-  }
-  
-  .form-container button {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-  }
-  
-  /* Gallery styles */
-  .gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
-    margin-top: 2rem;
-  }
-  
-  .gallery-item {
-    background-color: #fff;
-    padding: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .gallery-item img {
-    max-width: 100%;
-    border-radius: 4px;
-  }
-  
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f0f0f0;
+  color: #333;
+  animation: backgroundAnimation 15s infinite;
+}
+
+.no-animation {
+  animation: none !important;
+}
+
+/* Background animation */
+/* @keyframes backgroundAnimation {
+  0% { background-color: #f0f0f0; }
+  25% { background-color: #ffe0e0; }
+  50% { background-color: #e0ffe0; }
+  75% { background-color: #e0e0ff; }
+  100% { background-color: #f0f0f0; }
+} */
+
+/* Header styles */
+.header {
+  background-color: #00ff9d;
+  color: #000000;
+  padding: 1rem;
+  text-align: center;
+  font-size: 2rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  animation: headerAnimation 2s infinite;
+}
+
+/* @keyframes headerAnimation {
+  0% { background-color: #007bff; }
+  50% { background-color: #0056b3; }
+  100% { background-color: #007bff; }
+} */
+
+/* Form styles */
+.form-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  animation: formContainerAnimation 3s ease-in-out infinite;
+}
+
+@keyframes formContainerAnimation {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.form-container input,
+.form-container textarea,
+.form-container button {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  font-size: 1.1rem;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.form-container input:focus,
+.form-container textarea:focus,
+.form-container button:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.form-container textarea {
+  resize: vertical;
+  height: 100px;
+}
+
+.form-container button {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.form-container button:hover {
+  background-color: #218838;
+  transform: translateY(-3px);
+}
+
+.form-container button:active {
+  background-color: #1e7e34;
+}
+
+/* Gallery styles */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin: 2rem;
+  animation: galleryAnimation 2s ease-in-out infinite;
+}
+
+/* @keyframes galleryAnimation {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+} */
+
+.gallery-item {
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.gallery-item:hover {
+  transform: translateY(-5px);
+}
+
+.gallery-item img {
+  max-width: 100%;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.gallery-item img:hover {
+  transform: scale(1.05);
+}
+
+/* Overlay styles */
+.overlay {
+  position: fixed;
+  display: none;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.8);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.overlay img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.overlay-visible {
+  display: flex !important;
+}

@@ -3,14 +3,13 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './styles.css'; // Import CSS file
 
-
-// src/App.js
-
 function App() {
   const [doodles, setDoodles] = useState([]);
   const [user, setUser] = useState('');
   const [image, setImage] = useState('');
   const [description, setDescription] = useState('');
+  const [overlayImage, setOverlayImage] = useState('');
+  const [isOverlayVisible, setIsOverlayVisible] = useState(false);
 
   useEffect(() => {
     fetchDoodles();
@@ -41,6 +40,16 @@ function App() {
     } catch (error) {
       console.error('Error submitting doodle:', error);
     }
+  };
+
+  const handleImageClick = (imageUrl) => {
+    setOverlayImage(imageUrl);
+    setIsOverlayVisible(true);
+  };
+
+  const closeOverlay = () => {
+    setIsOverlayVisible(false);
+    setOverlayImage('');
   };
 
   return (
@@ -82,11 +91,21 @@ function App() {
         {doodles.map((doodle) => (
           <div key={doodle._id} className="gallery-item">
             <h3>{doodle.user}</h3>
-            <img src={doodle.image} alt="Doodle" />
+            <img
+              src={doodle.image}
+              alt="Doodle"
+              onClick={() => handleImageClick(doodle.image)}
+            />
             <p>{doodle.description}</p>
           </div>
         ))}
       </div>
+
+      {isOverlayVisible && (
+        <div className="overlay overlay-visible" onClick={closeOverlay}>
+          <img src={overlayImage} alt="Overlay" />
+        </div>
+      )}
     </div>
   );
 }
