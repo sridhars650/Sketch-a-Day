@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './styles.css'; // Import CSS file
+import './styles.css';
 
 function App() {
   const [doodles, setDoodles] = useState([]);
@@ -10,9 +10,11 @@ function App() {
   const [overlayImage, setOverlayImage] = useState('');
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
   const [favoritedDoodleId, setFavoritedDoodleId] = useState(null);
+  const [prompt, setPrompt] = useState('');
 
   useEffect(() => {
     fetchDoodles();
+    checkAndFetchPrompt();
   }, []);
 
   const fetchDoodles = async () => {
@@ -22,6 +24,29 @@ function App() {
       setDoodles(sortedDoodles);
     } catch (error) {
       console.error('Error fetching doodles:', error);
+    }
+  };
+
+  const checkAndFetchPrompt = () => {
+    const storedPrompt = localStorage.getItem('dailyPrompt');
+    const promptDate = localStorage.getItem('promptDate');
+
+    if (storedPrompt && promptDate === new Date().toDateString()) {
+      setPrompt(storedPrompt);
+    } else {
+      fetchPrompt();
+    }
+  };
+
+  const fetchPrompt = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/api/prompt');
+      const newPrompt = response.data.prompt;
+      setPrompt(newPrompt);
+      localStorage.setItem('dailyPrompt', newPrompt);
+      localStorage.setItem('promptDate', new Date().toDateString());
+    } catch (error) {
+      console.error('Error fetching prompt:', error);
     }
   };
 
@@ -52,48 +77,35 @@ function App() {
   const handleFavoriteClick = async (doodleId) => {
     try {
       const isCurrentlyFavorited = favoritedDoodleId === doodleId;
-  
+
       if (isCurrentlyFavorited) {
-        // Unfavorite the doodle
         await axios.delete(`http://localhost:3000/api/doodles/${doodleId}/favorite`);
-        setFavoritedDoodleId(null); // Clear favorited doodle ID
-  
-        // Reset localStorage flag only on unfavorite
+        setFavoritedDoodleId(null);
         const lastFavorited = localStorage.getItem('lastFavorited');
         if (lastFavorited && new Date().getDate() === new Date(lastFavorited).getDate()) {
           localStorage.removeItem('lastFavorited');
         }
       } else {
         const lastFavorited = localStorage.getItem('lastFavorited');
-  
-        // Check if a doodle has already been favorited today
         if (lastFavorited && new Date().getDate() === new Date(lastFavorited).getDate()) {
           alert('You can only favorite one doodle per day.');
           return;
         }
-  
-        // Favorite the doodle
         await axios.post(`http://localhost:3000/api/doodles/${doodleId}/favorite`);
-        setFavoritedDoodleId(doodleId); // Set as favorited
-  
-        // Store in localStorage that this doodle was favorited today
+        setFavoritedDoodleId(doodleId);
         localStorage.setItem('lastFavorited', new Date().toISOString());
       }
-  
-      fetchDoodles(); // Refresh doodles to reflect the new favorite count
+
+      fetchDoodles();
     } catch (error) {
       console.error('Error toggling favorite:', error);
     }
   };
-  
-    
-  
-  
 
   return (
     <div className="App">
       <header className="header">
-        <h1>Draw a stickman!</h1>
+        <h2>Today's Doodle Challenge: {prompt}</h2>
       </header>
 
       <div className="form-container">
