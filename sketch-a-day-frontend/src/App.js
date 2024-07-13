@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './styles.css';
 
-function App() {
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';
+
+const App = () => {
   const [doodles, setDoodles] = useState([]);
   const [user, setUser] = useState('');
   const [image, setImage] = useState('');
@@ -19,7 +21,7 @@ function App() {
 
   const fetchDoodles = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/doodles');
+      const response = await axios.get(`${API_BASE_URL}/api/doodles`);
       const sortedDoodles = response.data.sort((a, b) => b.favorites - a.favorites);
       setDoodles(sortedDoodles);
     } catch (error) {
@@ -40,7 +42,7 @@ function App() {
 
   const fetchPrompt = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/prompt');
+      const response = await axios.get(`${API_BASE_URL}/api/prompt`);
       const newPrompt = response.data.prompt;
       setPrompt(newPrompt);
       localStorage.setItem('dailyPrompt', newPrompt);
@@ -54,7 +56,7 @@ function App() {
     e.preventDefault();
     try {
       const newDoodle = { user, image, description };
-      await axios.post('http://localhost:3000/api/doodles', newDoodle);
+      await axios.post(`${API_BASE_URL}/api/doodles`, newDoodle);
       fetchDoodles();
       setUser('');
       setImage('');
@@ -79,7 +81,7 @@ function App() {
       const isCurrentlyFavorited = favoritedDoodleId === doodleId;
 
       if (isCurrentlyFavorited) {
-        await axios.delete(`http://localhost:3000/api/doodles/${doodleId}/favorite`);
+        await axios.delete(`${API_BASE_URL}/api/doodles/${doodleId}/favorite`);
         setFavoritedDoodleId(null);
         const lastFavorited = localStorage.getItem('lastFavorited');
         if (lastFavorited && new Date().getDate() === new Date(lastFavorited).getDate()) {
@@ -91,7 +93,7 @@ function App() {
           alert('You can only favorite one doodle per day.');
           return;
         }
-        await axios.post(`http://localhost:3000/api/doodles/${doodleId}/favorite`);
+        await axios.post(`${API_BASE_URL}/api/doodles/${doodleId}/favorite`);
         setFavoritedDoodleId(doodleId);
         localStorage.setItem('lastFavorited', new Date().toISOString());
       }
@@ -139,21 +141,13 @@ function App() {
 
       <div className="gallery">
         {doodles.map((doodle) => (
-          <div key={doodle._id} className="gallery-item">
-            <h3>{doodle.user}</h3>
-            <img
-              src={doodle.image}
-              alt="Doodle"
-              onClick={() => handleImageClick(doodle.image)}
-            />
-            <p>{doodle.description}</p>
-            <button
-              className={`favorite-button ${favoritedDoodleId === doodle._id ? 'favorited' : ''}`}
-              onClick={() => handleFavoriteClick(doodle._id)}
-            >
-              ❤️ {doodle.favorites}
-            </button>
-          </div>
+          <GalleryItem
+            key={doodle._id}
+            doodle={doodle}
+            favoritedDoodleId={favoritedDoodleId}
+            onImageClick={handleImageClick}
+            onFavoriteClick={handleFavoriteClick}
+          />
         ))}
       </div>
 
@@ -164,6 +158,20 @@ function App() {
       )}
     </div>
   );
-}
+};
+
+const GalleryItem = ({ doodle, favoritedDoodleId, onImageClick, onFavoriteClick }) => (
+  <div className="gallery-item">
+    <h3>{doodle.user}</h3>
+    <img src={doodle.image} alt="Doodle" onClick={() => onImageClick(doodle.image)} />
+    <p>{doodle.description}</p>
+    <button
+      className={`favorite-button ${favoritedDoodleId === doodle._id ? 'favorited' : ''}`}
+      onClick={() => onFavoriteClick(doodle._id)}
+    >
+      ❤️ {doodle.favorites}
+    </button>
+  </div>
+);
 
 export default App;
